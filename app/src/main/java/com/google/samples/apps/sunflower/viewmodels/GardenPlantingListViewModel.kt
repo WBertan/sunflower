@@ -16,20 +16,38 @@
 
 package com.google.samples.apps.sunflower.viewmodels
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import com.google.samples.apps.sunflower.data.GardenPlanting
 import com.google.samples.apps.sunflower.data.GardenPlantingRepository
 import com.google.samples.apps.sunflower.data.PlantAndGardenPlantings
+import kotlinx.coroutines.launch
 
 class GardenPlantingListViewModel internal constructor(
-    gardenPlantingRepository: GardenPlantingRepository
+    private val gardenPlantingRepository: GardenPlantingRepository
 ) : ViewModel() {
 
     val gardenPlantings = gardenPlantingRepository.getGardenPlantings()
 
     val plantAndGardenPlantings: LiveData<List<PlantAndGardenPlantings>> =
-            Transformations.map(gardenPlantingRepository.getPlantAndGardenPlantings()) { plantings ->
-                plantings.filter { it.gardenPlantings.isNotEmpty() }
+        Transformations.map(gardenPlantingRepository.getPlantAndGardenPlantings()) { plantings ->
+            plantings.filter { it.gardenPlantings.isNotEmpty() }
+        }
+
+    fun removeGardenPlantings(plantIdsToRemove: List<Long>) {
+        val currentPlantings = plantAndGardenPlantings.value ?: return
+        val plantingsToRemove = plantIdsToRemove.map { index ->
+            currentPlantings[index.toInt()].gardenPlantings
+        }
+        viewModelScope.launch {
+            plantingsToRemove.forEach { plantings ->
+                plantings.forEach { planting ->
+                    gardenPlantingRepository.removeGardenPlanting(planting)
+                }
             }
+        }
+    }
 }

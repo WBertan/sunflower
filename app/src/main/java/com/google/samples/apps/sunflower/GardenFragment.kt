@@ -31,6 +31,7 @@ import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StableIdKeyProvider
 import androidx.recyclerview.selection.StorageStrategy
+import androidx.recyclerview.widget.RecyclerView
 import com.google.samples.apps.sunflower.adapters.GardenPlantingAdapter
 import com.google.samples.apps.sunflower.adapters.GardenPlantingDetailsLookup
 import com.google.samples.apps.sunflower.databinding.FragmentGardenBinding
@@ -43,6 +44,8 @@ class GardenFragment : Fragment() {
 
     private lateinit var selectionTracker: SelectionTracker<Long>
     private lateinit var selectionObserver: GardenSelectionObserver
+
+    private lateinit var viewModel: GardenPlantingListViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -58,7 +61,7 @@ class GardenFragment : Fragment() {
 
     private fun subscribeUi(adapter: GardenPlantingAdapter, binding: FragmentGardenBinding) {
         val factory = InjectorUtils.provideGardenPlantingListViewModelFactory(requireContext())
-        val viewModel = ViewModelProviders.of(this, factory)
+        viewModel = ViewModelProviders.of(this, factory)
             .get(GardenPlantingListViewModel::class.java)
 
         viewModel.gardenPlantings.observe(viewLifecycleOwner, Observer { plantings ->
@@ -127,8 +130,10 @@ class GardenFragment : Fragment() {
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem) =
                 when (item.itemId) {
                     R.id.action_remove -> {
-                        // TODO: Remove planting.
+                        val selection = selectionTracker.selection.toList()
                         selectionTracker.clearSelection()
+
+                        viewModel.removeGardenPlantings(selection)
                         true
                     }
                     else -> false
