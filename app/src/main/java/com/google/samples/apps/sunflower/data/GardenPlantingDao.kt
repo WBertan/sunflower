@@ -50,4 +50,7 @@ interface GardenPlantingDao {
 
     @Delete
     fun deleteGardenPlanting(gardenPlanting: GardenPlanting)
+
+    @Delete
+    fun deleteGardenPlantings(gardenPlanting: List<GardenPlanting>)
 }

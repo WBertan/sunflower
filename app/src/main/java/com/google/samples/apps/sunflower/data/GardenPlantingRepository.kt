@@ -36,6 +36,12 @@ class GardenPlantingRepository private constructor(
         }
     }
 
+    suspend fun removeGardenPlantings(gardenPlantings: List<GardenPlanting>) {
+        withContext(IO) {
+            gardenPlantingDao.deleteGardenPlantings(gardenPlantings)
+        }
+    }
+
     fun getGardenPlantingForPlant(plantId: String) =
             gardenPlantingDao.getGardenPlantingForPlant(plantId)
 

@@ -27,6 +27,7 @@ import androidx.appcompat.view.ActionMode
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
+import androidx.recyclerview.selection.ItemKeyProvider
 import androidx.recyclerview.selection.SelectionPredicates
 import androidx.recyclerview.selection.SelectionTracker
 import androidx.recyclerview.selection.StableIdKeyProvider
@@ -69,15 +70,16 @@ class GardenFragment : Fragment() {
         })
 
         viewModel.plantAndGardenPlantings.observe(viewLifecycleOwner, Observer { result ->
-            if (!result.isNullOrEmpty())
+            if (!result.isNullOrEmpty()) {
                 adapter.submitList(result)
+            }
         })
 
         val recyclerView = binding.gardenList
         selectionTracker = SelectionTracker.Builder<Long>(
             GardenFragment::javaClass.name,
             recyclerView,
-            StableIdKeyProvider(recyclerView),
+            GardenItemKeyProvider(recyclerView),
             GardenPlantingDetailsLookup(recyclerView),
             StorageStrategy.createLongStorage()
         ).withSelectionPredicate(
@@ -105,7 +107,8 @@ class GardenFragment : Fragment() {
             }
             actionMode?.title =
                 resources.getQuantityString(
-                        R.plurals.garden_action_mode_count, selectedCount, selectedCount)
+                    R.plurals.garden_action_mode_count, selectedCount, selectedCount
+                )
         }
     }
 
@@ -128,16 +131,16 @@ class GardenFragment : Fragment() {
      */
     private inner class GardenActionModeCallback : ActionMode.Callback {
         override fun onActionItemClicked(mode: ActionMode, item: MenuItem) =
-                when (item.itemId) {
-                    R.id.action_remove -> {
-                        val selection = selectionTracker.selection.toList()
+            when (item.itemId) {
+                R.id.action_remove -> {
+                    val itemsToRemove = selectionTracker.selection.toList().also {
                         selectionTracker.clearSelection()
-
-                        viewModel.removeGardenPlantings(selection)
-                        true
                     }
-                    else -> false
+                    viewModel.removeGardenPlantings(itemsToRemove)
+                    true
                 }
+                else -> false
+            }
 
         override fun onCreateActionMode(mode: ActionMode, menu: Menu): Boolean {
             val menuInflater = requireActivity().menuInflater
@@ -152,6 +155,22 @@ class GardenFragment : Fragment() {
 
         override fun onDestroyActionMode(mode: ActionMode) {
             selectionTracker.clearSelection()
+        }
+    }
+
+    /**
+     * Class to provide the keys for our [SelectionTracker].
+     */
+    private class GardenItemKeyProvider(private val recyclerView: RecyclerView) :
+        ItemKeyProvider<Long>(SCOPE_MAPPED) {
+
+        override fun getKey(position: Int): Long? {
+            return recyclerView.adapter?.getItemId(position)
+        }
+
+        override fun getPosition(key: Long): Int {
+            val viewHolder = recyclerView.findViewHolderForItemId(key)
+            return viewHolder?.layoutPosition ?: RecyclerView.NO_POSITION
         }
     }
 }

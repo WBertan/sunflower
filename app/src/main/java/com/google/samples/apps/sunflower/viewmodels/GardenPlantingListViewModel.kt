@@ -39,15 +39,16 @@ class GardenPlantingListViewModel internal constructor(
 
     fun removeGardenPlantings(plantIdsToRemove: List<Long>) {
         val currentPlantings = plantAndGardenPlantings.value ?: return
-        val plantingsToRemove = plantIdsToRemove.map { index ->
+
+        val plantsToRemove = mutableListOf<GardenPlanting>()
+        plantIdsToRemove.map { index ->
             currentPlantings[index.toInt()].gardenPlantings
+        }.forEach { gardenPlantingsList ->
+            plantsToRemove.addAll(gardenPlantingsList)
         }
+
         viewModelScope.launch {
-            plantingsToRemove.forEach { plantings ->
-                plantings.forEach { planting ->
-                    gardenPlantingRepository.removeGardenPlanting(planting)
-                }
-            }
+            gardenPlantingRepository.removeGardenPlantings(plantsToRemove)
         }
     }
 }
