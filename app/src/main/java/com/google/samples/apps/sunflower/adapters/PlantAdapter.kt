@@ -19,7 +19,9 @@ package com.google.samples.apps.sunflower.adapters
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import androidx.navigation.findNavController
+import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
@@ -105,7 +107,13 @@ class PlantAdapter : ListAdapter<Plant, RecyclerView.ViewHolder>(PlantDiffCallba
     private fun createOnClickListener(plantId: String): View.OnClickListener {
         return View.OnClickListener {
             val direction = HomeViewPagerFragmentDirections.actionViewPagerFragmentToPlantDetailFragment(plantId)
-            it.findNavController().navigate(direction)
+
+            val imageView: ImageView = it.findViewById(R.id.plant_item_image)
+            val extras = FragmentNavigatorExtras(
+                imageView to "transitionImage2"
+            )
+
+            it.findNavController().navigate(direction, extras)
         }
     }
 
