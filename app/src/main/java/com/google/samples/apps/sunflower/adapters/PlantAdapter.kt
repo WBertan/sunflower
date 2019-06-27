@@ -20,6 +20,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ImageView
+import android.widget.TextView
 import androidx.navigation.findNavController
 import androidx.navigation.fragment.FragmentNavigatorExtras
 import androidx.recyclerview.widget.DiffUtil
@@ -109,8 +110,19 @@ class PlantAdapter : ListAdapter<Plant, RecyclerView.ViewHolder>(PlantDiffCallba
             val direction = HomeViewPagerFragmentDirections.actionViewPagerFragmentToPlantDetailFragment(plantId)
 
             val imageView: ImageView = it.findViewById(R.id.plant_item_image)
+            val textView: TextView = it.findViewById(R.id.plant_item_title)
+
+            /**
+             * Add settings for shared element transition.  Each line contains a Pair that links the source View
+             * (where the transition is starting from) to the destination View's transitionName
+             * (where the transition ends).
+             *
+             * Both the source and destination Views need a transitionName, and for RecyclerView items each
+             * transitionName needs to be unique.  See list_item_plant and fragment_plant_detail for more on usage.
+             */
             val extras = FragmentNavigatorExtras(
-                imageView to "transitionImage2"
+                imageView to "detail_image_transition",
+                textView to "detail_title_transition"
             )
 
             it.findNavController().navigate(direction, extras)

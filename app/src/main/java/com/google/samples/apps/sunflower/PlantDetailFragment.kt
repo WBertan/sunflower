@@ -19,6 +19,7 @@ package com.google.samples.apps.sunflower
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.transition.TransitionInflater
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -103,6 +104,8 @@ class PlantDetailFragment : Fragment() {
         }
 
         setHasOptionsMenu(true)
+
+        sharedElementEnterTransition = TransitionInflater.from(context).inflateTransition(R.transition.move)
 
         return binding.root
     }

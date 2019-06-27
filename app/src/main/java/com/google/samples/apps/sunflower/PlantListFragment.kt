@@ -26,7 +26,6 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
-import androidx.transition.ChangeBounds
 import com.google.samples.apps.sunflower.adapters.PlantAdapter
 import com.google.samples.apps.sunflower.databinding.FragmentPlantListBinding
 import com.google.samples.apps.sunflower.utilities.InjectorUtils
@@ -51,6 +50,9 @@ class PlantListFragment : Fragment() {
         subscribeUi(adapter)
 
         setHasOptionsMenu(true)
+
+//        sharedElementReturnTransition = TransitionInflater.from(context).inflateTransition(R.transition.move)
+
         return binding.root
     }
 
