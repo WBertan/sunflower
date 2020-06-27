@@ -29,6 +29,10 @@ class GardenPlantingRepository private constructor(
         gardenPlantingDao.deleteGardenPlanting(gardenPlanting)
     }
 
+    suspend fun removeGardenPlanting(plantId: String) {
+        gardenPlantingDao.deleteGardenPlanting(plantId)
+    }
+
     fun isPlanted(plantId: String) =
             gardenPlantingDao.isPlanted(plantId)
 

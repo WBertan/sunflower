@@ -16,6 +16,7 @@
 
 package com.google.samples.apps.sunflower.adapters
 
+import android.graphics.drawable.Drawable
 import android.text.method.LinkMovementMethod
 import android.widget.ImageView
 import android.widget.TextView
@@ -37,13 +38,9 @@ fun bindImageFromUrl(view: ImageView, imageUrl: String?) {
     }
 }
 
-@BindingAdapter("isGone")
-fun bindIsGone(view: FloatingActionButton, isGone: Boolean?) {
-    if (isGone == null || isGone) {
-        view.hide()
-    } else {
-        view.show()
-    }
+@BindingAdapter("app:srcCompat")
+fun bindSrcCompat(view: FloatingActionButton, drawable: Drawable?) {
+    view.setImageDrawable(drawable)
 }
 
 @BindingAdapter("renderHtml")

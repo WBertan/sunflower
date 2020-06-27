@@ -47,4 +47,7 @@ interface GardenPlantingDao {
 
     @Delete
     suspend fun deleteGardenPlanting(gardenPlanting: GardenPlanting)
+
+    @Query("DELETE FROM garden_plantings WHERE plant_id = :plantId")
+    suspend fun deleteGardenPlanting(plantId: String)
 }
