@@ -36,7 +36,7 @@ class GardenActivityTest {
         // When the "Add Plant" button is clicked
         onView(withId(R.id.add_plant)).perform(click())
 
-        // Then the ViewPager should change to the Plant List page
-        onView(withId(R.id.plant_list)).check(matches(isDisplayed()))
+        // Then the Navigation should change to the Plant List page
+        onView(withId(R.id.plant_list_fragment)).check(matches(isDisplayed()))
     }
 }
