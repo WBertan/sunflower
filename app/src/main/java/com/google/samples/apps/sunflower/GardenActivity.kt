@@ -19,12 +19,25 @@ package com.google.samples.apps.sunflower
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.databinding.DataBindingUtil.setContentView
+import androidx.navigation.Navigation
+import androidx.navigation.ui.NavigationUI
 import com.google.samples.apps.sunflower.databinding.ActivityGardenBinding
+import kotlinx.android.synthetic.main.activity_garden.*
 
 class GardenActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView<ActivityGardenBinding>(this, R.layout.activity_garden)
+        setUpNavigation()
+    }
+
+    private fun setUpNavigation() {
+        bottom_nav.itemIconTintList = null
+
+        NavigationUI.setupWithNavController(
+            bottom_nav,
+            Navigation.findNavController(this, R.id.nav_host)
+        )
     }
 }
