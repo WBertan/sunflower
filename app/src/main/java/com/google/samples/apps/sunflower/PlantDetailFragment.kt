@@ -89,10 +89,10 @@ class PlantDetailFragment : Fragment() {
                         isToolbarShown = shouldShowToolbar
 
                         // Use shadow animator to add elevation if toolbar is shown
-                        appbar.isActivated = shouldShowToolbar
+                        appbar?.isActivated = shouldShowToolbar
 
                         // Show the plant name if toolbar is shown
-                        toolbarLayout.isTitleEnabled = shouldShowToolbar
+                        toolbarLayout?.isTitleEnabled = shouldShowToolbar
                     }
                 }
             )
