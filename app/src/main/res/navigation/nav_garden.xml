@@ -24,7 +24,7 @@
     <fragment
         android:id="@+id/garden_renderer_fragment"
         android:name="com.google.samples.apps.sunflower.GardenRendererFragment"
-        android:label="@string/plant_list_title"
+        android:label="@string/my_garden_title"
         tools:layout="@layout/fragment_garden">
 
         <action
