@@ -18,16 +18,17 @@
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    app:startDestination="@id/my_garden_fragment">
+    android:id="@+id/nav_garden"
+    app:startDestination="@id/garden_renderer_fragment">
 
     <fragment
-        android:id="@+id/my_garden_fragment"
-        android:name="com.google.samples.apps.sunflower.GardenFragment"
-        android:label="@string/my_garden_title"
+        android:id="@+id/garden_renderer_fragment"
+        android:name="com.google.samples.apps.sunflower.GardenRendererFragment"
+        android:label="@string/plant_list_title"
         tools:layout="@layout/fragment_garden">
 
         <action
-            android:id="@+id/action_garden_fragment_to_plant_detail_fragment"
+            android:id="@+id/action_to_plant_detail_fragment"
             app:destination="@id/plant_detail_fragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
@@ -37,13 +38,13 @@
     </fragment>
 
     <fragment
-        android:id="@+id/plant_list_fragment"
-        android:name="com.google.samples.apps.sunflower.PlantListFragment"
+        android:id="@+id/plant_list_renderer_fragment"
+        android:name="com.google.samples.apps.sunflower.PlantListRendererFragment"
         android:label="@string/plant_list_title"
         tools:layout="@layout/fragment_plant_list">
 
         <action
-            android:id="@+id/action_plant_list_fragment_to_plant_detail_fragment"
+            android:id="@+id/action_to_plant_detail_fragment"
             app:destination="@id/plant_detail_fragment"
             app:enterAnim="@anim/slide_in_right"
             app:exitAnim="@anim/slide_out_left"
@@ -59,7 +60,10 @@
         tools:layout="@layout/fragment_plant_detail">
         <argument
             android:name="plantId"
+            android:defaultValue=""
             app:argType="string" />
     </fragment>
+
+    <include app:graph="@navigation/nav_garden_detail" />
 
 </navigation>
