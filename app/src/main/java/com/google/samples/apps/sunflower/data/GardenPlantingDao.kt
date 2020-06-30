@@ -31,6 +31,9 @@ interface GardenPlantingDao {
     @Query("SELECT * FROM garden_plantings")
     fun getGardenPlantings(): LiveData<List<GardenPlanting>>
 
+    @Query("SELECT * FROM garden_plantings WHERE plant_id = :plantId LIMIT 1")
+    fun getGardenPlanting(plantId: String): LiveData<GardenPlanting?>
+
     @Query("SELECT EXISTS(SELECT 1 FROM garden_plantings WHERE plant_id = :plantId LIMIT 1)")
     fun isPlanted(plantId: String): LiveData<Boolean>
 

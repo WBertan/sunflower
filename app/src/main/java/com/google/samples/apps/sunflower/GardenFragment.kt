@@ -23,6 +23,7 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
 import com.google.samples.apps.sunflower.adapters.GardenPlantingAdapter
 import com.google.samples.apps.sunflower.databinding.FragmentGardenBinding
@@ -43,7 +44,7 @@ class GardenFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
         binding = FragmentGardenBinding.inflate(inflater, container, false)
-        val adapter = GardenPlantingAdapter()
+        val adapter = GardenPlantingAdapter(::onPlantClickListener)
         binding.gardenList.adapter = adapter
 
         binding.addPlant.setOnClickListener {
@@ -52,6 +53,15 @@ class GardenFragment : Fragment() {
 
         subscribeUi(adapter, binding)
         return binding.root
+    }
+
+    private fun onPlantClickListener(plantId: String) {
+        val navController =
+            (parentFragmentManager.findFragmentById(R.id.detail_nav_container) as? NavHostFragment)
+                ?.navController
+                ?: findNavController()
+        val direction = PlantDetailFragmentDirections.actionToPlantDetailFragment(plantId)
+        navController.navigate(direction)
     }
 
     private fun subscribeUi(adapter: GardenPlantingAdapter, binding: FragmentGardenBinding) {
@@ -63,6 +73,6 @@ class GardenFragment : Fragment() {
 
     // TODO: convert to data binding if applicable
     private fun navigateToPlantListPage() {
-        findNavController().navigate(R.id.plant_list_fragment)
+        findNavController().navigate(R.id.plant_list_renderer_fragment)
     }
 }

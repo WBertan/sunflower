@@ -1,0 +1,226 @@
+<!--
+  ~ Copyright 2020 Google LLC
+  ~
+  ~ Licensed under the Apache License, Version 2.0 (the "License");
+  ~ you may not use this file except in compliance with the License.
+  ~ You may obtain a copy of the License at
+  ~
+  ~     https://www.apache.org/licenses/LICENSE-2.0
+  ~
+  ~ Unless required by applicable law or agreed to in writing, software
+  ~ distributed under the License is distributed on an "AS IS" BASIS,
+  ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  ~ See the License for the specific language governing permissions and
+  ~ limitations under the License.
+  -->
+
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools">
+
+    <data>
+
+        <import type="com.google.samples.apps.sunflower.data.Plant" />
+
+        <variable
+            name="viewModel"
+            type="com.google.samples.apps.sunflower.viewmodels.PlantDetailViewModel" />
+
+        <variable
+            name="callback"
+            type="com.google.samples.apps.sunflower.PlantDetailFragment.Callback" />
+    </data>
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:background="?attr/colorSurface"
+        app:isGone="@{viewModel.plant == null}"
+        tools:context="com.google.samples.apps.sunflower.GardenActivity"
+        tools:ignore="MergeRootFrame">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar"
+            android:layout_width="match_parent"
+            android:layout_height="?attr/actionBarSize"
+            android:background="@android:color/transparent"
+            android:elevation="@dimen/toolbar_elevation"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            app:menu="@menu/menu_plant_detail"
+            app:titleTextColor="?attr/colorOnSurface" />
+
+        <androidx.constraintlayout.widget.Guideline
+            android:id="@+id/vertical_guideline"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            app:layout_constraintGuide_percent="0.5" />
+
+        <ImageView
+            android:id="@+id/detail_image"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:contentDescription="@string/plant_detail_image_content_description"
+            android:scaleType="centerCrop"
+            app:imageFromUrl="@{viewModel.plant.imageUrl}"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="@+id/vertical_guideline"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent"
+            tools:src="@tools:sample/backgrounds/scenic" />
+
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/plant_detail_scrollview"
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="@+id/vertical_guideline"
+            app:layout_constraintTop_toTopOf="parent">
+
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_margin="@dimen/margin_large">
+
+                <TextView
+                    android:id="@+id/plant_detail_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:text="@{viewModel.plant.name}"
+                    android:textAppearance="?attr/textAppearanceHeadline5"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    tools:text="Apple" />
+
+                <TextView
+                    android:id="@+id/plant_watering_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="@string/watering_needs_prefix"
+                    android:textColor="?attr/colorAccent"
+                    android:textStyle="bold"
+                    app:isGone="@{viewModel.isPlanted()}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/plant_detail_name" />
+
+                <TextView
+                    android:id="@+id/plant_watering"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_normal"
+                    app:isGone="@{viewModel.isPlanted()}"
+                    app:layout_constraintStart_toEndOf="@+id/header_barrier"
+                    app:layout_constraintTop_toTopOf="@id/plant_watering_header"
+                    app:wateringText="@{viewModel.plant.wateringInterval}"
+                    tools:text="every 7 days" />
+
+                <TextView
+                    android:id="@+id/garden_planted_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="@string/plant_date_header"
+                    android:textColor="?attr/colorAccent"
+                    android:textStyle="bold"
+                    app:isGone="@{!viewModel.isPlanted()}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/plant_watering_header" />
+
+                <TextView
+                    android:id="@+id/garden_planted"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_normal"
+                    app:isGone="@{!viewModel.isPlanted()}"
+                    app:layout_constraintStart_toEndOf="@+id/header_barrier"
+                    app:layout_constraintTop_toTopOf="@id/garden_planted_header"
+                    app:plantedText="@{viewModel.gardenPlanting}"
+                    tools:text="June 8, 2020" />
+
+                <TextView
+                    android:id="@+id/garden_last_watering_header"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="center_horizontal"
+                    android:text="@string/watered_date_header"
+                    android:textColor="?attr/colorAccent"
+                    android:textStyle="bold"
+                    app:isGone="@{!viewModel.isPlanted()}"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/garden_planted_header" />
+
+                <TextView
+                    android:id="@+id/garden_last_watering"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_normal"
+                    app:isGone="@{!viewModel.isPlanted()}"
+                    app:lastWateringText="@{viewModel.gardenPlanting}"
+                    app:layout_constraintStart_toEndOf="@+id/header_barrier"
+                    app:layout_constraintTop_toTopOf="@id/garden_last_watering_header"
+                    tools:text="June 8, 2020" />
+
+                <TextView
+                    android:id="@+id/garden_next_watering"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="@dimen/margin_normal"
+                    app:isGone="@{!viewModel.isPlanted()}"
+                    app:layout_constraintStart_toEndOf="@+id/values_barrier"
+                    app:layout_constraintTop_toTopOf="@id/garden_last_watering_header"
+                    app:text="@{@plurals/watering_next(viewModel.plant.wateringInterval, viewModel.plant.wateringInterval)}"
+                    tools:text="water tomorrow" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/header_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="end"
+                    app:constraint_referenced_ids="plant_watering_header,garden_planted_header,garden_last_watering_header" />
+
+                <androidx.constraintlayout.widget.Barrier
+                    android:id="@+id/values_barrier"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    app:barrierDirection="end"
+                    app:constraint_referenced_ids="plant_watering,garden_planted,garden_last_watering" />
+
+                <TextView
+                    android:id="@+id/plant_description"
+                    style="?android:attr/textAppearanceMedium"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="@dimen/margin_small"
+                    android:textIsSelectable="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/garden_last_watering_header"
+                    app:renderHtml="@{viewModel.plant.description}"
+                    tools:text="Details about the plant" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <com.google.android.material.floatingactionbutton.FloatingActionButton
+            android:id="@+id/fab"
+            style="@style/Widget.MaterialComponents.FloatingActionButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="@dimen/margin_large"
+            android:onClick="@{() -> viewModel.isPlanted ? callback.remove(viewModel.plant) : callback.add(viewModel.plant)}"
+            android:tint="@android:color/white"
+            app:layout_constraintBottom_toBottomOf="parent"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:shapeAppearance="@style/ShapeAppearance.Sunflower.FAB"
+            app:srcCompat="@{viewModel.isPlanted ? @drawable/ic_minus : @drawable/ic_plus}"
+            tools:srcCompat="@drawable/ic_plus" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+
+</layout>

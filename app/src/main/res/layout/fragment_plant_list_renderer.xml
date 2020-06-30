@@ -15,21 +15,8 @@
   ~ limitations under the License.
   -->
 
-<menu xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res-auto">
-
-    <item
-        android:id="@+id/garden_renderer_fragment"
-        android:icon="@drawable/garden_tab_selector"
-        android:orderInCategory="1"
-        android:title="@string/my_garden_title"
-        app:showAsAction="always" />
-
-    <item
-        android:id="@+id/plant_list_renderer_fragment"
-        android:icon="@drawable/plant_list_tab_selector"
-        android:orderInCategory="2"
-        android:title="@string/plant_list_title"
-        app:showAsAction="always" />
-
-</menu>
+<androidx.fragment.app.FragmentContainerView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/list"
+    android:name="com.google.samples.apps.sunflower.PlantListFragment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent" />

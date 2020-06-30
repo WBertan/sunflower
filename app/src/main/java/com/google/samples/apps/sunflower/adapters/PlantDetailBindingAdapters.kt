@@ -27,6 +27,9 @@ import com.bumptech.glide.Glide
 import com.bumptech.glide.load.resource.drawable.DrawableTransitionOptions
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.samples.apps.sunflower.R
+import com.google.samples.apps.sunflower.data.GardenPlanting
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 @BindingAdapter("imageFromUrl")
 fun bindImageFromUrl(view: ImageView, imageUrl: String?) {
@@ -60,4 +63,16 @@ fun bindWateringText(textView: TextView, wateringInterval: Int) {
         wateringInterval, wateringInterval)
 
     textView.text = quantityString
+}
+
+@BindingAdapter("plantedText")
+fun bindPlantedText(textView: TextView, gardenPlanting: GardenPlanting?) {
+    val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.US)
+    textView.text = gardenPlanting?.plantDate?.time?.let(dateFormat::format)
+}
+
+@BindingAdapter("lastWateringText")
+fun bindLastWateringText(textView: TextView, gardenPlanting: GardenPlanting?) {
+    val dateFormat = SimpleDateFormat("MMM d, yyyy", Locale.US)
+    textView.text = gardenPlanting?.lastWateringDate?.time?.let(dateFormat::format)
 }

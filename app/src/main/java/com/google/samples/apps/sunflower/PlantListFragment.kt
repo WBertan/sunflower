@@ -26,6 +26,9 @@ import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
+import androidx.navigation.fragment.NavHostFragment
+import androidx.navigation.fragment.findNavController
+import com.google.samples.apps.sunflower.PlantDetailFragmentDirections
 import com.google.samples.apps.sunflower.adapters.PlantAdapter
 import com.google.samples.apps.sunflower.databinding.FragmentPlantListBinding
 import com.google.samples.apps.sunflower.utilities.InjectorUtils
@@ -45,12 +48,21 @@ class PlantListFragment : Fragment() {
         val binding = FragmentPlantListBinding.inflate(inflater, container, false)
         context ?: return binding.root
 
-        val adapter = PlantAdapter()
+        val adapter = PlantAdapter(::onPlantClickListener)
         binding.plantList.adapter = adapter
         subscribeUi(adapter)
 
         setHasOptionsMenu(true)
         return binding.root
+    }
+
+    private fun onPlantClickListener(plantId: String) {
+        val navController =
+            (parentFragmentManager.findFragmentById(R.id.detail_nav_container) as? NavHostFragment)
+                ?.navController
+                ?: findNavController()
+        val direction = PlantDetailFragmentDirections.actionToPlantDetailFragment(plantId)
+        navController.navigate(direction)
     }
 
     override fun onCreateOptionsMenu(menu: Menu, inflater: MenuInflater) {

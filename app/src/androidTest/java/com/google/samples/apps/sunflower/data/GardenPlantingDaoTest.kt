@@ -29,6 +29,7 @@ import kotlinx.coroutines.runBlocking
 import org.hamcrest.CoreMatchers.equalTo
 import org.junit.After
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Rule
@@ -63,6 +64,29 @@ class GardenPlantingDaoTest {
         ).also { it.gardenPlantingId = 2 }
         gardenPlantingDao.insertGardenPlanting(gardenPlanting2)
         assertThat(getValue(gardenPlantingDao.getGardenPlantings()).size, equalTo(2))
+    }
+
+    @Test fun testGetGardenPlanting() = runBlocking {
+        val gardenPlanting2 = GardenPlanting(
+            testPlants[1].plantId,
+            testCalendar,
+            testCalendar
+        ).also { it.gardenPlantingId = 2 }
+        gardenPlantingDao.insertGardenPlanting(gardenPlanting2)
+        assertThat(
+            getValue(gardenPlantingDao.getGardenPlanting(testPlants[1].plantId)),
+            equalTo(gardenPlanting2)
+        )
+    }
+
+    @Test fun testGetGardenPlanting_notFound() = runBlocking {
+        val gardenPlanting2 = GardenPlanting(
+            testPlants[1].plantId,
+            testCalendar,
+            testCalendar
+        ).also { it.gardenPlantingId = 2 }
+        gardenPlantingDao.insertGardenPlanting(gardenPlanting2)
+        assertNull(getValue(gardenPlantingDao.getGardenPlanting("dummyId")))
     }
 
     @Test fun testDeleteGardenPlanting() = runBlocking {

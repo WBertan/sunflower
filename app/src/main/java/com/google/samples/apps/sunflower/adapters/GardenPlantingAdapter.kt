@@ -17,26 +17,24 @@
 package com.google.samples.apps.sunflower.adapters
 
 import android.view.LayoutInflater
-import android.view.View
 import android.view.ViewGroup
 import androidx.databinding.DataBindingUtil
-import androidx.navigation.findNavController
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.ListAdapter
 import androidx.recyclerview.widget.RecyclerView
-import com.google.samples.apps.sunflower.GardenFragmentDirections
 import com.google.samples.apps.sunflower.R
 import com.google.samples.apps.sunflower.data.PlantAndGardenPlantings
 import com.google.samples.apps.sunflower.databinding.ListItemGardenPlantingBinding
 import com.google.samples.apps.sunflower.viewmodels.PlantAndGardenPlantingsViewModel
 
-class GardenPlantingAdapter :
-    ListAdapter<PlantAndGardenPlantings, GardenPlantingAdapter.ViewHolder>(
-        GardenPlantDiffCallback()
-    ) {
+class GardenPlantingAdapter(
+    private val onPlantClickListener: (plantId: String) -> Unit
+) : ListAdapter<PlantAndGardenPlantings,
+    GardenPlantingAdapter.ViewHolder>(GardenPlantDiffCallback()) {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         return ViewHolder(
+            onPlantClickListener,
             DataBindingUtil.inflate(
                 LayoutInflater.from(parent.context),
                 R.layout.list_item_garden_planting, parent, false
@@ -49,20 +47,13 @@ class GardenPlantingAdapter :
     }
 
     class ViewHolder(
+        private val onPlantClickListener: (plantId: String) -> Unit,
         private val binding: ListItemGardenPlantingBinding
     ) : RecyclerView.ViewHolder(binding.root) {
         init {
-            binding.setClickListener { view ->
-                binding.viewModel?.plantId?.let { plantId ->
-                    navigateToPlant(plantId, view)
-                }
+            binding.setClickListener {
+                binding.viewModel?.plantId?.let(onPlantClickListener)
             }
-        }
-
-        private fun navigateToPlant(plantId: String, view: View) {
-            val direction = GardenFragmentDirections
-                .actionGardenFragmentToPlantDetailFragment(plantId)
-            view.findNavController().navigate(direction)
         }
 
         fun bind(plantings: PlantAndGardenPlantings) {
