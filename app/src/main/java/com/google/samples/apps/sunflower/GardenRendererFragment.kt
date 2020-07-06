@@ -20,15 +20,44 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.fragment.app.Fragment
+import androidx.core.view.doOnLayout
+import androidx.window.DeviceState
+import kotlinx.android.synthetic.main.fragment_garden_renderer_half_opened.*
 
-class GardenRendererFragment : Fragment() {
+class GardenRendererFragment : RendererFragment() {
 
     override fun onCreateView(
         inflater: LayoutInflater,
         container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
-        return inflater.inflate(R.layout.fragment_garden_renderer, null)
+        val layoutRes = when (deviceState.posture) {
+            DeviceState.POSTURE_HALF_OPENED -> R.layout.fragment_garden_renderer_half_opened
+            else -> R.layout.fragment_garden_renderer
+        }
+        return inflater.inflate(layoutRes, null)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
+
+        view.doOnLayout {
+            println("asas onViewCreated: displayFeature=$displayFeature | deviceState=$deviceState")
+
+            val viewParams = getViewParams() ?: return@doOnLayout
+
+            with(viewParams) {
+                if (isPortrait) {
+                    detail_nav_container_wrapper?.layoutParams = firstPanel
+                    hinge?.layoutParams = hingePanel
+                    list_wrapper?.layoutParams = secondPanel
+                } else {
+                    // We invert in Landscape keeping the Landscape rule to looks like Master/Detail
+                    list_wrapper?.layoutParams = firstPanel
+                    hinge?.layoutParams = hingePanel
+                    detail_nav_container_wrapper?.layoutParams = secondPanel
+                }
+            }
+        }
     }
 }
