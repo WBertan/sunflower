@@ -16,6 +16,7 @@
 
 package com.google.samples.apps.sunflower
 
+import android.app.Activity
 import android.content.Context
 import android.graphics.Rect
 import android.os.Handler
@@ -26,8 +27,6 @@ import androidx.fragment.app.Fragment
 import androidx.window.DeviceState
 import androidx.window.DisplayFeature
 import androidx.window.WindowManager
-import com.google.samples.apps.sunflower.backend.MidScreenFoldBackend
-import com.google.samples.apps.sunflower.backend.MidScreenHingeBackend
 import java.util.concurrent.Executor
 
 abstract class RendererFragment : Fragment() {
@@ -39,33 +38,9 @@ abstract class RendererFragment : Fragment() {
         val secondPanel: FrameLayout.LayoutParams
     )
 
-    /*
-        Make use of a hinge with height 50.
-        Please configure the emulator with: 'hw.sensor.hinge.areas = 0-512-768-50'
-     */
-    private val hingeBackend = MidScreenHingeBackend()
-
-    /*
-        Make use of a fold, meaning no hinge is displayed to the user.
-        Please configure the emulator with: 'hw.sensor.hinge.areas = 0-512-768-0'
-     */
-    private val foldBackend = MidScreenFoldBackend()
-
     private val handler = Handler(Looper.getMainLooper())
     private val mainThreadExecutor = Executor { r: Runnable -> handler.post(r) }
-    private val realWindowManager by lazy { WindowManager(requireContext(), null) }
-    private val realWindowLayoutInfoConsumer = Consumer<DeviceState> {
-        val displayFeature = realWindowManager.windowLayoutInfo.displayFeatures
-        println("asas real DeviceState Consumer: displayFeature=$displayFeature | deviceState=$it")
-
-        hingeBackend.setManualDeviceState(it)
-        foldBackend.setManualDeviceState(it)
-    }
-
-    // Using the fake windowBackend as the emulator wasn't returning proper displayFeatures
-    // Change the 'windowBackend' to one of the fakes 'hingeBackend' or 'foldBackend',
-    //   or leave as 'null' to use the system 'windowBackend'
-    private val windowManager by lazy { WindowManager(requireContext(), foldBackend) }
+    private val windowManager by lazy { WindowManager(requireContext(), null) }
     private val windowLayoutInfoConsumer = Consumer<DeviceState> {
         val displayFeature = windowManager.windowLayoutInfo.displayFeatures
         println("asas DeviceState Consumer: displayFeature=$displayFeature | deviceState=$it")
@@ -94,6 +69,11 @@ abstract class RendererFragment : Fragment() {
         val view = requireView()
         val isPortrait = bounds.isPortrait()
         if (isPortrait) {
+            val statusBarHeight = requireActivity().getStatusBarHeight()
+            bounds.apply {
+                top -= statusBarHeight
+                bottom -= statusBarHeight
+            }
             ViewParams(
                 isPortrait = isPortrait,
                 firstPanel = FrameLayout.LayoutParams(view.width, bounds.top),
@@ -112,6 +92,12 @@ abstract class RendererFragment : Fragment() {
                     .apply { setMargins(bounds.right, 0, 0, 0) }
             )
         }
+    }
+
+    private fun Activity.getStatusBarHeight(): Int {
+        val resourceId = resources.getIdentifier("status_bar_height", "dimen", "android")
+        return if (resourceId > 0) resources.getDimensionPixelSize(resourceId)
+        else Rect().apply { window.decorView.getWindowVisibleDisplayFrame(this) }.top
     }
 
     /*
@@ -142,7 +128,6 @@ abstract class RendererFragment : Fragment() {
         //  My opinion? Do not use Consumer, but other class where do not satisfy SAM rules.
         // windowManager.unregisterDeviceStateChangeCallback {  }
 
-        realWindowManager.unregisterDeviceStateChangeCallback(realWindowLayoutInfoConsumer)
         windowManager.unregisterDeviceStateChangeCallback(windowLayoutInfoConsumer)
         super.onDetach()
     }
@@ -158,14 +143,5 @@ abstract class RendererFragment : Fragment() {
             mainThreadExecutor,
             windowLayoutInfoConsumer
         )
-        realWindowManager.registerDeviceStateChangeCallback(
-            mainThreadExecutor,
-            realWindowLayoutInfoConsumer
-        )
-
-        // This initialises the fake windowBackend with whatever the real device has as a state
-        val realDeviceState = realWindowManager.deviceState
-        hingeBackend.setManualDeviceState(realDeviceState)
-        foldBackend.setManualDeviceState(realDeviceState)
     }
 }
