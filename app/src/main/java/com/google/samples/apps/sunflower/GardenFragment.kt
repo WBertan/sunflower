@@ -20,17 +20,25 @@ import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.core.view.doOnLayout
+import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
+import androidx.recyclerview.widget.GridLayoutManager
+import androidx.recyclerview.widget.RecyclerView
 import com.google.samples.apps.sunflower.adapters.GardenPlantingAdapter
 import com.google.samples.apps.sunflower.databinding.FragmentGardenBinding
 import com.google.samples.apps.sunflower.utilities.InjectorUtils
 import com.google.samples.apps.sunflower.viewmodels.GardenPlantingListViewModel
 
 class GardenFragment : Fragment() {
+
+    private companion object {
+        private const val ITEM_PREFERABLE_WIDTH = 192
+    }
 
     private lateinit var binding: FragmentGardenBinding
 
@@ -47,6 +55,14 @@ class GardenFragment : Fragment() {
         val adapter = GardenPlantingAdapter(::onPlantClickListener)
         binding.gardenList.adapter = adapter
 
+        // Not really sure what is happening, if only leaving one of these it calculates wrong!
+        binding.gardenList.doOnLayout {
+            ((it as? RecyclerView)?.layoutManager as? GridLayoutManager)?.spanCount = it.spanCount
+        }
+        binding.gardenList.doOnPreDraw {
+            ((it as? RecyclerView)?.layoutManager as? GridLayoutManager)?.spanCount = it.spanCount
+        }
+
         binding.addPlant.setOnClickListener {
             navigateToPlantListPage()
         }
@@ -54,6 +70,9 @@ class GardenFragment : Fragment() {
         subscribeUi(adapter, binding)
         return binding.root
     }
+
+    private val View.spanCount: Int
+        get() = (width / ITEM_PREFERABLE_WIDTH).coerceAtLeast(1)
 
     private fun onPlantClickListener(plantId: String) {
         val navController =
