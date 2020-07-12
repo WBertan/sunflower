@@ -23,25 +23,17 @@ import android.view.MenuInflater
 import android.view.MenuItem
 import android.view.View
 import android.view.ViewGroup
-import androidx.core.view.doOnLayout
-import androidx.core.view.doOnPreDraw
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.observe
 import androidx.navigation.fragment.NavHostFragment
 import androidx.navigation.fragment.findNavController
-import androidx.recyclerview.widget.GridLayoutManager
-import androidx.recyclerview.widget.RecyclerView
 import com.google.samples.apps.sunflower.adapters.PlantAdapter
 import com.google.samples.apps.sunflower.databinding.FragmentPlantListBinding
 import com.google.samples.apps.sunflower.utilities.InjectorUtils
 import com.google.samples.apps.sunflower.viewmodels.PlantListViewModel
 
 class PlantListFragment : Fragment() {
-
-    private companion object {
-        private const val ITEM_PREFERABLE_WIDTH = 144
-    }
 
     private val viewModel: PlantListViewModel by viewModels {
         InjectorUtils.providePlantListViewModelFactory(this)
@@ -59,20 +51,9 @@ class PlantListFragment : Fragment() {
         binding.plantList.adapter = adapter
         subscribeUi(adapter)
 
-        // Not really sure what is happening, if only leaving one of these it calculates wrong!
-        binding.plantList.doOnLayout {
-            ((it as? RecyclerView)?.layoutManager as? GridLayoutManager)?.spanCount = it.spanCount
-        }
-        binding.plantList.doOnPreDraw {
-            ((it as? RecyclerView)?.layoutManager as? GridLayoutManager)?.spanCount = it.spanCount
-        }
-
         setHasOptionsMenu(true)
         return binding.root
     }
-
-    private val View.spanCount: Int
-        get() = (width / ITEM_PREFERABLE_WIDTH).coerceAtLeast(1)
 
     private fun onPlantClickListener(plantId: String) {
         val navController =
