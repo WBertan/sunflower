@@ -32,6 +32,7 @@ class PlantListRendererFragment : RendererFragment() {
         savedInstanceState: Bundle?
     ): View? {
         val layoutRes = when (deviceState.posture) {
+            DeviceState.POSTURE_FLIPPED -> R.layout.fragment_plant_list_renderer_flipped
             DeviceState.POSTURE_HALF_OPENED -> R.layout.fragment_plant_list_renderer_half_opened
             else -> R.layout.fragment_plant_list_renderer
         }
